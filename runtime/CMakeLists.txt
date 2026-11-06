@@ -1442,6 +1442,15 @@ if(BUILD_TESTING)
     add_test(NAME restore_edge_irq_replay_test COMMAND restore_edge_irq_replay_test)
     set_tests_properties(restore_edge_irq_replay_test PROPERTIES TIMEOUT 60)
 
+    # VBlank edges fire on schedule inside an exception handler and latch
+    # I_STAT; includes interrupts.c for its static state.
+    add_executable(vblank_edge_in_exception_test
+        tests/test_vblank_edge_in_exception.c
+        tests/restore_edge_irq_stubs.c
+        src/traps.c)
+    target_include_directories(vblank_edge_in_exception_test PRIVATE include src)
+    add_test(NAME vblank_edge_in_exception_test COMMAND vblank_edge_in_exception_test)
+
     add_executable(dma_gpu_linked_list_timing_test
         tests/test_dma_gpu_linked_list_timing.c
         src/dma_gpu_ll.c)

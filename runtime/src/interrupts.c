@@ -510,7 +510,12 @@ static void fire_vblank_edge(void) {
 
 void interrupts_service_scheduled_events(void) {
     note_sio_progress_cycle();
-    if (in_exception) return;
+    /* The VBlank edge fires on schedule even inside an exception handler, as
+     * on hardware: I_STAT bit 0 latches (missed edges coalesce) and delivery
+     * waits on SR IEc in psx_check_interrupts. Deferring the edge here stalled
+     * presentation, pacing and audio for the whole handler (a libcd CdSync
+     * from a callback held VBlank ~4 frames) and pinned the device deadline
+     * to 0, stepping devices one cycle at a time. */
     while (psx_vblank_edge_due(cycles_since_vblank)) {
         if (should_defer_vblank_for_sio()) return;
         fire_vblank_edge();
