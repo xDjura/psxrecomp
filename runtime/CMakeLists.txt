@@ -1930,6 +1930,10 @@ if(BUILD_TESTING)
     target_include_directories(cdrom_getlocl_test PRIVATE include src)
     add_test(NAME cdrom_getlocl_test COMMAND cdrom_getlocl_test)
 
+    add_executable(cdrom_pause_after_seek_test tests/test_cdrom_pause_after_seek.c)
+    target_include_directories(cdrom_pause_after_seek_test PRIVATE include src)
+    add_test(NAME cdrom_pause_after_seek_test COMMAND cdrom_pause_after_seek_test)
+
     add_executable(cdrom_resident_sector_test tests/test_cdrom_resident_sector.c)
     target_include_directories(cdrom_resident_sector_test PRIVATE include src)
     add_test(NAME cdrom_resident_sector_test COMMAND cdrom_resident_sector_test)

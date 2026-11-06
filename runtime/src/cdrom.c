@@ -2073,7 +2073,13 @@ static void queue_or_exec_command(uint8_t cmd) {
  * disc-speed divisors / 'instant' mode must never compress this latency back
  * into the race window. Call BEFORE stop_read_stream()/CDSTAT_READ clear. */
 static int pause_complete_delay_cycles(void) {
-    if (!reading && !(stat_reg & (CDSTAT_READ | CDSTAT_PLAY)))
+    /* "Was reading" means the drive is actually streaming sectors, not the
+     * READ status bit: seek completion sets READ for PSX-CD-003 while the
+     * drive is idle, and a Pause there must ack fast (DuckStation: 7400 when
+     * not reading/playing). Armored Core's loader issues CdRead (which
+     * starts with Pause) from the SeekP-complete callback; the full settle
+     * latency held its IRQ handler ~3.7 frames and stalled the music tick. */
+    if (!reading && !(stat_reg & CDSTAT_PLAY))
         return 5000;
     int lba = reading ? msf_to_lba(read_min, read_sec, read_sect)
                       : last_sector_lba;
